@@ -1,7 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import PersonalizedDietGuide from './PersonalizedDietGuide';
-
 const activityLevels = [
   { label: 'Sedentary', desc: 'Little or no exercise', factor: 1.20, emoji: '🪑' },
   { label: 'Light', desc: 'Exercise 1–3 days/week', factor: 1.375, emoji: '🚶' },
@@ -210,7 +208,6 @@ export default function HealthCalculator() {
   const handleCalculate = () => {
     if (activeTab === 'bmi' && bmi !== null) setCalculated(true);
     if (activeTab === 'calories' && maintenanceCalories !== null) setCalculated(true);
-    if (activeTab === 'diet' && bmi !== null) setCalculated(true);
   };
 
   const handleReset = () => {
@@ -260,13 +257,6 @@ export default function HealthCalculator() {
           >
             <span className="calc-tab-icon">🔥</span>
             Calories
-          </button>
-          <button
-            className={`calc-tab ${activeTab === 'diet' ? 'calc-tab-active' : ''}`}
-            onClick={() => { setActiveTab('diet'); setCalculated(false); }}
-          >
-            <span className="calc-tab-icon">🥑</span>
-            Diet Guide
           </button>
         </div>
 
@@ -409,17 +399,15 @@ export default function HealthCalculator() {
                   exit={{ opacity: 0 }}
                 >
                   <div className="calc-placeholder-icon">
-                    {activeTab === 'bmi' ? '📏' : activeTab === 'calories' ? '🔥' : '🥑'}
+                    {activeTab === 'bmi' ? '📏' : '🔥'}
                   </div>
                   <h3 className="calc-placeholder-title">
-                    {activeTab === 'bmi' ? 'BMI Calculator' : activeTab === 'calories' ? 'Calorie Calculator' : 'Diet Guide'}
+                    {activeTab === 'bmi' ? 'BMI Calculator' : 'Calorie Calculator'}
                   </h3>
                   <p className="calc-placeholder-desc">
                     {activeTab === 'bmi'
                       ? 'Enter your weight and height to see your Body Mass Index with a visual health gauge.'
-                      : activeTab === 'calories'
-                        ? 'Fill in your details to get your daily maintenance calories and personalized macro breakdown.'
-                        : 'Enter your profile to receive personalized food recommendations based on your body metrics.'}
+                      : 'Fill in your details to get your daily maintenance calories and personalized macro breakdown.'}
                   </p>
                 </motion.div>
               ) : activeTab === 'bmi' && bmi !== null ? (
@@ -464,25 +452,6 @@ export default function HealthCalculator() {
                     transition={{ delay: 1 }}
                   >
                     ← Try different values
-                  </motion.button>
-                </motion.div>
-              ) : activeTab === 'diet' && bmi !== null ? (
-                <motion.div
-                  key="diet-result"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  style={{ width: '100%' }}
-                >
-                  <PersonalizedDietGuide data={{ gender, age, weight, heightCm, bmi, activityLevelIndex: activityLevel, maintenanceCalories }} />
-                  <motion.button
-                    className="calc-reset-btn"
-                    onClick={handleReset}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
-                  >
-                    ← Edit my profile
                   </motion.button>
                 </motion.div>
               ) : null}

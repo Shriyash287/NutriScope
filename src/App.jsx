@@ -9,6 +9,7 @@ import HealthCalculator from './components/HealthCalculator';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import EssentialNutrients from './components/EssentialNutrients';
+import DietGuidePage from './components/DietGuidePage';
 
 
 const pageVariants = {
@@ -65,6 +66,12 @@ export default function App() {
         return (
           <TabPage key="nutrients">
             <EssentialNutrients />
+          </TabPage>
+        );
+      case 'diet-guide':
+        return (
+          <TabPage key="diet-guide">
+            <DietGuidePage />
           </TabPage>
         );
       default:

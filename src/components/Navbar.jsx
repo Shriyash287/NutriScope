@@ -6,6 +6,7 @@ const tabs = [
   { id: 'features', label: 'Features', emoji: '✨' },
   { id: 'how-it-works', label: 'How It Works', emoji: '⚙️' },
   { id: 'health-tools', label: 'Health Tools', emoji: '⚡' },
+  { id: 'diet-guide', label: 'Diet Guide', emoji: '🥑' },
   { id: 'nutrients', label: 'Nutrients', emoji: '🧬' },
 ];
 
