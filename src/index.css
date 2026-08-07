@@ -1893,6 +1893,11 @@ body {
   .hero-heading {
     font-size: 2.2rem;
   }
+  
+  .hero-heading-cursive {
+    font-size: 2.8rem;
+    margin-top: 0;
+  }
 
   .hero-buttons {
     flex-direction: column;
@@ -1944,6 +1949,42 @@ body {
 
   .pricing-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Structural paddings */
+  .essential-nutrients-section,
+  .features-section,
+  .how-section,
+  .pricing-section,
+  .calculator-section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Grid layouts */
+  .en-nutrient-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .meal-timing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr 1fr;
+    padding: 1rem;
+  }
+
+  .diet-section {
+    padding: 1.2rem;
+  }
+
+  .calc-result-side {
+    padding: 1.5rem 1rem;
+  }
+  
+  .calc-input-side {
+    padding: 1rem;
   }
 }
 
