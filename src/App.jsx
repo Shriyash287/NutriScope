@@ -41,7 +41,7 @@ export default function App() {
         return (
           <TabPage key="home">
             <HeroSection onTabChange={setActiveTab} />
-            <CTASection />
+            <CTASection onTabChange={setActiveTab} />
           </TabPage>
         );
       case 'features':
