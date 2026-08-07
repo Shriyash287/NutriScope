@@ -193,26 +193,7 @@ export default function HeroSection({ onTabChange }) {
             </button>
           </motion.div>
 
-          <motion.div
-            className="stats-bar"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-            style={{ marginTop: '2rem', justifyContent: 'flex-start', padding: 0 }}
-          >
-            <div className="stat-item">
-              <div className="stat-number">50K+</div>
-              <div className="stat-label">Active Users</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">2M+</div>
-              <div className="stat-label">Meals Analyzed</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">98%</div>
-              <div className="stat-label">Accuracy</div>
-            </div>
-          </motion.div>
+
         </motion.div>
 
         {/* Visual Side - 3D Bowl */}
