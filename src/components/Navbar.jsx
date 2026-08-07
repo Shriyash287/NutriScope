@@ -54,15 +54,7 @@ export default function Navbar({ activeTab, onTabChange }) {
             </a>
           </li>
         ))}
-        <li>
-          <a
-            href="#"
-            className="nav-cta"
-            onClick={(e) => { e.preventDefault(); handleTabClick('health-tools'); }}
-          >
-            Get Started
-          </a>
-        </li>
+
       </ul>
 
       <button
