@@ -178,7 +178,7 @@ export default function HeroSection({ onTabChange }) {
               className="btn-primary food-bg-button"
               onClick={(e) => {
                 handleRipple(e);
-                onTabChange?.('health-tools');
+                onTabChange?.('diet-guide');
               }}
             >
               <span>Start Diet Analysis</span>
