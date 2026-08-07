@@ -88,7 +88,7 @@ function SteamParticles() {
   );
 }
 
-export default function HeroSection() {
+export default function HeroSection({ onTabChange }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const containerRef = useRef(null);
@@ -135,15 +135,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <motion.div
-            className="hero-badge"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-          >
-            <span className="hero-badge-dot" />
-            AI-Powered Nutrition Platform
-          </motion.div>
+
 
           <h1 className="hero-heading">
             <motion.span
@@ -155,11 +147,10 @@ export default function HeroSection() {
               Analyze Your Food.
             </motion.span>
             <motion.span
-              className="gradient-text"
+              className="gradient-text hero-heading-cursive"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.7 }}
-              style={{ display: 'block' }}
             >
               Transform Your Health.
             </motion.span>
@@ -184,13 +175,19 @@ export default function HeroSection() {
           >
             <button
               id="start-analysis-btn"
-              className="btn-primary"
-              onClick={handleRipple}
+              className="btn-primary food-bg-button"
+              onClick={(e) => {
+                handleRipple(e);
+                onTabChange?.('health-tools');
+              }}
             >
-              Start Diet Analysis
+              <span>Start Diet Analysis</span>
               <span className="btn-arrow">→</span>
             </button>
-            <button className="btn-secondary">
+            <button
+              className="btn-secondary"
+              onClick={() => onTabChange?.('features')}
+            >
               Explore Features
               <span className="btn-arrow">↓</span>
             </button>

@@ -317,9 +317,18 @@ body {
 .hero-heading {
   font-family: var(--font-display);
   font-size: clamp(2.8rem, 5.5vw, 4.5rem);
-  font-weight: 800;
+  font-weight: 300; /* Lite minimal */
   line-height: 1.1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
+}
+
+.hero-heading-cursive {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(4rem, 7.5vw, 6rem);
+  font-weight: 700;
+  display: block;
+  margin-top: -0.8rem; /* Overlay on upper line */
+  transform: rotate(-2deg); /* Added a slight aesthetic angle */
 }
 
 .hero-heading .gradient-text {
@@ -327,6 +336,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  padding-bottom: 5px;
 }
 
 .hero-subheading {
@@ -361,6 +371,32 @@ body {
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 25px rgba(249, 115, 22, 0.35);
+}
+
+.btn-primary.food-bg-button {
+  background: url('/food-bg.png') center/cover;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary.food-bg-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* Overlay to make text legible */
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.btn-primary.food-bg-button > * {
+  position: relative;
+  z-index: 2;
+}
+
+.btn-primary.food-bg-button, .btn-primary.food-bg-button .btn-arrow {
+  color: white !important;
+  text-shadow: 0px 2px 4px rgba(0,0,0,1);
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .btn-primary:hover {

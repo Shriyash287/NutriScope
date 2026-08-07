@@ -6,8 +6,6 @@ import HeroSection from './components/HeroSection';
 import FeaturesSection from './components/FeaturesSection';
 import HowItWorks from './components/HowItWorks';
 import HealthCalculator from './components/HealthCalculator';
-import TestimonialsSection from './components/TestimonialsSection';
-import PricingSection from './components/PricingSection';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import EssentialNutrients from './components/EssentialNutrients';
@@ -41,7 +39,7 @@ export default function App() {
       case 'home':
         return (
           <TabPage key="home">
-            <HeroSection />
+            <HeroSection onTabChange={setActiveTab} />
             <CTASection />
           </TabPage>
         );
@@ -69,23 +67,10 @@ export default function App() {
             <EssentialNutrients />
           </TabPage>
         );
-      case 'reviews':
-        return (
-          <TabPage key="reviews">
-            <TestimonialsSection />
-          </TabPage>
-        );
-      case 'pricing':
-        return (
-          <TabPage key="pricing">
-            <PricingSection />
-            <CTASection />
-          </TabPage>
-        );
       default:
         return (
           <TabPage key="home">
-            <HeroSection />
+            <HeroSection onTabChange={setActiveTab} />
           </TabPage>
         );
     }
