@@ -10,13 +10,44 @@ const activityLevels = [
   { label: 'Very Active', desc: 'Intense daily training', factor: 1.90, emoji: '⚡' },
 ];
 
+const ALLERGY_OPTIONS = [
+  { id: 'lactose', label: 'Lactose intolerance' },
+  { id: 'gluten', label: 'Gluten / Wheat' },
+  { id: 'nuts', label: 'Tree Nuts' },
+  { id: 'peanut', label: 'Peanut' },
+  { id: 'soy', label: 'Soy' },
+];
+
+const HEALTH_FLAG_OPTIONS = [
+  { id: 'diabetes', label: 'Diabetes / Prediabetes' },
+  { id: 'hypertension', label: 'Hypertension' },
+  { id: 'thyroid', label: 'Thyroid' },
+  { id: 'pcos', label: 'PCOS / PCOD' },
+  { id: 'cholesterol', label: 'High Cholesterol' },
+];
+
 export default function DietGuidePage() {
+  // Tier 1 — Required
   const [gender, setGender] = useState('male');
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
   const [heightCm, setHeightCm] = useState('');
   const [activityLevel, setActivityLevel] = useState(2);
+  const [dietaryPattern, setDietaryPattern] = useState('vegetarian');
+  const [waistCm, setWaistCm] = useState('');
+
+  // Tier 2 — Collapsible
+  const [allergies, setAllergies] = useState([]);
+  const [healthFlags, setHealthFlags] = useState([]);
+  const [region, setRegion] = useState('pan-indian');
+
+  // Tier 3 — Nice-to-have
+  const [mealsPerDay, setMealsPerDay] = useState('3');
+  const [sleepHours, setSleepHours] = useState('');
+
+  // UI state
   const [calculated, setCalculated] = useState(false);
+  const [refineOpen, setRefineOpen] = useState(false);
 
   const bmi = useMemo(() => {
     const w = parseFloat(weight);
@@ -51,6 +82,20 @@ export default function DietGuidePage() {
     setCalculated(false);
   };
 
+  const toggleAllergy = (id) => {
+    setAllergies(prev =>
+      prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
+    );
+    setCalculated(false);
+  };
+
+  const toggleHealthFlag = (id) => {
+    setHealthFlags(prev =>
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
+    setCalculated(false);
+  };
+
   return (
     <section className="calculator-section" style={{ paddingTop: '100px', minHeight: 'calc(100vh - 72px)' }}>
       <motion.div
@@ -64,7 +109,7 @@ export default function DietGuidePage() {
           <span className="gradient-text">Nutrition Plan.</span>
         </h2>
         <p className="section-subheading">
-          Enter your metrics to generate a comprehensive, personalized diet guide tailored exclusively for your body and goals.
+          Enter your metrics to generate a comprehensive, personalized diet guide tailored exclusively for your body, dietary pattern, and goals.
         </p>
         <p className="section-subheading" style={{ fontSize: '14px', fontStyle: 'italic', opacity: 0.7, marginTop: '8px' }}>
           *Reference values follow ICMR-NIN 2020 and WHO Asia-Pacific guidelines for Indian populations; this tool is for educational purposes and does not replace professional medical or dietetic advice.
@@ -80,6 +125,7 @@ export default function DietGuidePage() {
         <div className="calc-body">
           {/* Input Side */}
           <div className="calc-input-side">
+            {/* Gender */}
             <div className="calc-field">
               <label className="calc-label">Gender</label>
               <div className="gender-selector">
@@ -98,6 +144,7 @@ export default function DietGuidePage() {
               </div>
             </div>
 
+            {/* Age */}
             <div className="calc-field">
               <label className="calc-label" htmlFor="dg-age">Age</label>
               <div className="calc-input-wrap">
@@ -115,6 +162,7 @@ export default function DietGuidePage() {
               </div>
             </div>
 
+            {/* Weight */}
             <div className="calc-field">
               <label className="calc-label" htmlFor="dg-weight">Weight</label>
               <div className="calc-input-wrap">
@@ -132,6 +180,7 @@ export default function DietGuidePage() {
               </div>
             </div>
 
+            {/* Height */}
             <div className="calc-field">
               <label className="calc-label" htmlFor="dg-height">Height</label>
               <div className="calc-input-wrap">
@@ -149,6 +198,7 @@ export default function DietGuidePage() {
               </div>
             </div>
 
+            {/* Activity Level */}
             <div className="calc-field">
               <label className="calc-label">Activity Level</label>
               <div className="activity-selector">
@@ -164,6 +214,169 @@ export default function DietGuidePage() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* TIER 1: Dietary Pattern */}
+            <div className="calc-field">
+              <label className="calc-label">Dietary Pattern</label>
+              <div className="diet-pattern-selector">
+                {[
+                  { id: 'vegetarian', label: 'Vegetarian', emoji: '🥬' },
+                  { id: 'eggetarian', label: 'Eggetarian', emoji: '🥚' },
+                  { id: 'vegan', label: 'Vegan', emoji: '🌱' },
+                  { id: 'non-vegetarian', label: 'Non-Veg', emoji: '🍗' },
+                ].map(opt => (
+                  <button
+                    key={opt.id}
+                    className={`activity-btn ${dietaryPattern === opt.id ? 'activity-btn-active' : ''}`}
+                    onClick={() => { setDietaryPattern(opt.id); setCalculated(false); }}
+                  >
+                    <span className="activity-emoji">{opt.emoji}</span>
+                    <span className="activity-label">{opt.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* TIER 1: Waist (optional but prompted) */}
+            <div className="calc-field">
+              <label className="calc-label" htmlFor="dg-waist">Waist Circumference <span style={{ opacity: 0.5, fontSize: '12px' }}>(optional)</span></label>
+              <div className="calc-input-wrap">
+                <input
+                  id="dg-waist"
+                  type="number"
+                  className="calc-input"
+                  placeholder="80"
+                  value={waistCm}
+                  onChange={(e) => { setWaistCm(e.target.value); setCalculated(false); }}
+                  min="40"
+                  max="200"
+                />
+                <span className="calc-input-unit">cm</span>
+              </div>
+            </div>
+
+            {/* TIER 2/3: Collapsible "Refine your plan" panel */}
+            <div className="refine-panel">
+              <button
+                className="refine-toggle"
+                onClick={() => setRefineOpen(!refineOpen)}
+                type="button"
+              >
+                <span>⚙️ Refine your plan</span>
+                <span style={{ transform: refineOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}>▼</span>
+              </button>
+
+              <AnimatePresence>
+                {refineOpen && (
+                  <motion.div
+                    className="refine-content"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Allergies */}
+                    <div className="calc-field" style={{ marginTop: '16px' }}>
+                      <label className="calc-label">Allergies / Intolerances</label>
+                      <div className="chip-selector">
+                        {ALLERGY_OPTIONS.map(opt => (
+                          <button
+                            key={opt.id}
+                            className={`chip-btn ${allergies.includes(opt.id) ? 'chip-btn-active' : ''}`}
+                            onClick={() => toggleAllergy(opt.id)}
+                            type="button"
+                          >
+                            {allergies.includes(opt.id) ? '✕ ' : '+ '}{opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Health Flags */}
+                    <div className="calc-field">
+                      <label className="calc-label">Health Conditions <span style={{ opacity: 0.5, fontSize: '12px' }}>(general guidance only)</span></label>
+                      <div className="chip-selector">
+                        {HEALTH_FLAG_OPTIONS.map(opt => (
+                          <button
+                            key={opt.id}
+                            className={`chip-btn ${healthFlags.includes(opt.id) ? 'chip-btn-active' : ''}`}
+                            onClick={() => toggleHealthFlag(opt.id)}
+                            type="button"
+                          >
+                            {healthFlags.includes(opt.id) ? '✕ ' : '+ '}{opt.label}
+                          </button>
+                        ))}
+                      </div>
+                      {healthFlags.length > 0 && (
+                        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '6px', lineHeight: '1.4' }}>
+                          This is not a diagnostic tool. Notes based on health conditions are general lifestyle guidance only — consult your doctor or dietitian for personalized medical advice.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Region */}
+                    <div className="calc-field">
+                      <label className="calc-label">Your Region</label>
+                      <div className="diet-pattern-selector">
+                        {[
+                          { id: 'north', label: 'North', emoji: '🏔️' },
+                          { id: 'south', label: 'South', emoji: '🌴' },
+                          { id: 'east', label: 'East', emoji: '🌊' },
+                          { id: 'west', label: 'West', emoji: '🏜️' },
+                          { id: 'pan-indian', label: 'Mixed', emoji: '🇮🇳' },
+                        ].map(opt => (
+                          <button
+                            key={opt.id}
+                            className={`activity-btn ${region === opt.id ? 'activity-btn-active' : ''}`}
+                            onClick={() => { setRegion(opt.id); setCalculated(false); }}
+                          >
+                            <span className="activity-emoji">{opt.emoji}</span>
+                            <span className="activity-label">{opt.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Meals per day */}
+                    <div className="calc-field">
+                      <label className="calc-label">Meal Frequency</label>
+                      <div className="gender-selector">
+                        <button
+                          className={`gender-btn ${mealsPerDay === '3' ? 'gender-btn-active' : ''}`}
+                          onClick={() => { setMealsPerDay('3'); setCalculated(false); }}
+                        >
+                          3 Meals
+                        </button>
+                        <button
+                          className={`gender-btn ${mealsPerDay === '5-6' ? 'gender-btn-active' : ''}`}
+                          onClick={() => { setMealsPerDay('5-6'); setCalculated(false); }}
+                        >
+                          5–6 Small Meals
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Sleep hours */}
+                    <div className="calc-field">
+                      <label className="calc-label" htmlFor="dg-sleep">Sleep Hours <span style={{ opacity: 0.5, fontSize: '12px' }}>(optional)</span></label>
+                      <div className="calc-input-wrap">
+                        <input
+                          id="dg-sleep"
+                          type="number"
+                          className="calc-input"
+                          placeholder="7"
+                          value={sleepHours}
+                          onChange={(e) => { setSleepHours(e.target.value); setCalculated(false); }}
+                          min="3"
+                          max="14"
+                        />
+                        <span className="calc-input-unit">hrs</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <button
@@ -191,7 +404,7 @@ export default function DietGuidePage() {
                   <div className="calc-placeholder-icon">🥑</div>
                   <h3 className="calc-placeholder-title">Diet Guide</h3>
                   <p className="calc-placeholder-desc">
-                    Enter your complete profile to receive actionable, highly personalized dietary insights based on your unique body metrics.
+                    Enter your complete profile to receive actionable, highly personalized dietary insights based on your unique body metrics and dietary pattern.
                   </p>
                 </motion.div>
               ) : (
@@ -202,7 +415,22 @@ export default function DietGuidePage() {
                   exit={{ opacity: 0 }}
                   style={{ width: '100%' }}
                 >
-                  <PersonalizedDietGuide data={{ gender, age, weight, heightCm, bmi, activityLevelIndex: activityLevel, maintenanceCalories }} />
+                  <PersonalizedDietGuide data={{
+                    gender,
+                    age,
+                    weight,
+                    heightCm,
+                    bmi,
+                    activityLevelIndex: activityLevel,
+                    maintenanceCalories,
+                    dietaryPattern,
+                    waistCm: waistCm ? parseFloat(waistCm) : null,
+                    allergies,
+                    healthFlags,
+                    region,
+                    mealsPerDay,
+                    sleepHours: sleepHours ? parseFloat(sleepHours) : null,
+                  }} />
                   <motion.button
                     className="calc-reset-btn"
                     onClick={handleReset}

@@ -1,21 +1,32 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-const MICRONUTRIENTS = [
-  { name: 'Protein', amount: 'Varies', importance: 'Muscle repair, hormones, enzymes', sources: 'Meat, dairy, legumes' },
-  { name: 'Calcium', amount: '1000mg', importance: 'Bone health, muscle function', sources: 'Dairy, leafy greens, fortified foods' },
-  { name: 'Iron', amount: '8-18mg', importance: 'Oxygen transport in blood', sources: 'Spinach, red meat, lentils' },
-  { name: 'Vitamin D', amount: '15-20mcg', importance: 'Calcium absorption, immunity', sources: 'Sunlight, fatty fish, egg yolks' },
-  { name: 'Vitamin B12', amount: '2.4mcg', importance: 'Nerve function, DNA synthesis', sources: 'Meat, dairy, fortified cereals' },
-  { name: 'Vitamin C', amount: '75-90mg', importance: 'Immunity, collagen production', sources: 'Citrus, berries, bell peppers' },
-  { name: 'Vitamin A', amount: '700-900mcg', importance: 'Vision, immune system', sources: 'Carrots, sweet potatoes, spinach' },
-  { name: 'Magnesium', amount: '310-420mg', importance: 'Muscle/nerve function, energy', sources: 'Nuts, seeds, whole grains' },
-  { name: 'Potassium', amount: '2600-3400mg', importance: 'Blood pressure, fluid balance', sources: 'Bananas, potatoes, avocados' },
-  { name: 'Omega-3', amount: '1.1-1.6g', importance: 'Brain health, inflammation', sources: 'Fatty fish, flax seeds, walnuts' },
-  { name: 'Zinc', amount: '8-11mg', importance: 'Immunity, wound healing', sources: 'Meat, shellfish, legumes, seeds' }
-];
+import {
+  getWaistRisk,
+  getPersonalizedFoodAdditions,
+  getRegionalMeals,
+  getHealthFlagNotes,
+  getUserRiskNutrients
+} from '../utils/recommendationEngine';
+import { NUTRIENT_DB } from '../data/nutrientDB';
 
 export default function PersonalizedDietGuide({ data }) {
-  const { gender, age: ageStr, weight: weightStr, heightCm: heightStr, bmi, maintenanceCalories, activityLevelIndex } = data;
+  const {
+    gender,
+    age: ageStr,
+    weight: weightStr,
+    heightCm: heightStr,
+    bmi,
+    maintenanceCalories,
+    activityLevelIndex,
+    dietaryPattern,
+    waistCm,
+    allergies,
+    healthFlags,
+    region,
+    mealsPerDay,
+    sleepHours
+  } = data;
+
   const w = parseFloat(weightStr);
   const h = parseFloat(heightStr);
   const a = parseInt(ageStr, 10);
@@ -37,7 +48,7 @@ export default function PersonalizedDietGuide({ data }) {
     }
 
     targetCalories = Math.round(targetCalories);
-    
+
     const proteinGrams = Math.round(proteinFactor * w);
     const fatGrams = Math.round(0.8 * w);
     const proteinKcal = proteinGrams * 4;
@@ -45,16 +56,16 @@ export default function PersonalizedDietGuide({ data }) {
     const remainingKcal = Math.max(0, targetCalories - proteinKcal - fatKcal);
     const carbGrams = Math.round(remainingKcal / 4);
     const carbKcal = carbGrams * 4;
-    
-    // Adjust total to exactly match sum due to rounding
+
     const totalKcal = proteinKcal + fatKcal + carbKcal;
-    
+
     const waterMin = (35 * w) / 1000;
     const waterMax = (40 * w) / 1000;
-    
+
     // Fiber: 30g per 2000 kcal (ICMR-NIN 2020)
     const fiber = Math.round((totalKcal / 2000) * 30);
 
+    // WHO Asia-Pacific / Indian Cutoffs
     let bmiCat = 'Normal';
     if (bmi < 18.5) bmiCat = 'Underweight';
     else if (bmi >= 23 && bmi < 25) bmiCat = 'Overweight';
@@ -71,10 +82,30 @@ export default function PersonalizedDietGuide({ data }) {
     };
   }, [w, h, a, maintenanceCalories, goal, gender, bmi]);
 
+  const waistRisk = useMemo(() => {
+    return getWaistRisk(waistCm, h, gender);
+  }, [waistCm, h, gender]);
+
+  const foodAdditions = useMemo(() => {
+    return getPersonalizedFoodAdditions({ dietaryPattern, allergies, gender, age: a });
+  }, [dietaryPattern, allergies, gender, a]);
+
+  const regionalMeals = useMemo(() => {
+    return getRegionalMeals(region);
+  }, [region]);
+
+  const healthNotes = useMemo(() => {
+    return getHealthFlagNotes(healthFlags);
+  }, [healthFlags]);
+
+  const userRiskNutrients = useMemo(() => {
+    return getUserRiskNutrients(dietaryPattern);
+  }, [dietaryPattern]);
+
   if (!calc) {
     return (
       <div className="diet-guide-error">
-        Missing information. Please complete your profile in the Calorie Calculator tab first.
+        Missing information. Please complete your profile first.
       </div>
     );
   }
@@ -82,7 +113,7 @@ export default function PersonalizedDietGuide({ data }) {
   const { targetCalories, protein, carbs, fat, water, fiber, bmiCat } = calc;
 
   return (
-    <motion.div 
+    <motion.div
       className="personalized-diet-guide"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -107,6 +138,12 @@ export default function PersonalizedDietGuide({ data }) {
           <span>🥗 BMI Category</span>
           <strong>{bmiCat}</strong>
         </div>
+        {waistRisk && waistRisk.level !== 'normal' && (
+          <div className="summary-card" style={{ borderColor: waistRisk.color }}>
+            <span style={{ color: waistRisk.color }}>⚠️ Waist Risk</span>
+            <strong style={{ color: waistRisk.color }}>{waistRisk.label}</strong>
+          </div>
+        )}
         <div className="summary-card">
           <span>🥩 Protein Goal</span>
           <strong>{protein}g</strong>
@@ -129,7 +166,7 @@ export default function PersonalizedDietGuide({ data }) {
         </div>
         <div className="summary-card">
           <span>🍽️ Meal Frequency</span>
-          <strong>3 Meals + 1–2 Snacks</strong>
+          <strong>{mealsPerDay === '3' ? '3 Meals + 1–2 Snacks' : '5–6 Small Meals'}</strong>
         </div>
       </div>
 
@@ -145,55 +182,65 @@ export default function PersonalizedDietGuide({ data }) {
             <li><strong>Fiber:</strong> {fiber} g</li>
             <li><strong>Fruits:</strong> 2–3 servings</li>
             <li><strong>Vegetables:</strong> 4–5 servings</li>
-            <li><strong>Dairy:</strong> 2 servings</li>
+            <li><strong>Dairy:</strong> {['vegan', 'lactose'].some(a => allergies.includes(a) || dietaryPattern === 'vegan') ? '2 servings (plant-based)' : '2 servings'}</li>
             <li><strong>Healthy Fats:</strong> 2 servings</li>
           </ul>
         </div>
-        
-        {/* SECTION 9: Warnings */}
+
+        {/* SECTION 3: BMI & Waist Health Insight */}
         <div className="diet-section warning-section">
-          <h3>⚠️ BMI Health Insight</h3>
-          <p>Your BMI is {bmi.toFixed(1)}.</p>
+          <h3>⚠️ Metabolic Health Insight</h3>
+          <p>Your BMI is <strong>{bmi.toFixed(1)}</strong>.</p>
           {bmi < 18.5 && <p><strong>Recommendation:</strong> Healthy weight gain is advised. Focus on nutrient-dense, higher-calorie foods.</p>}
-          {bmi >= 18.5 && bmi < 23 && <p><strong>Status:</strong> Healthy weight. Keep up the good work and maintain a balanced lifestyle.</p>}
-          {bmi >= 23 && bmi < 25 && <p><strong>Recommendation:</strong> A moderate calorie deficit and increased daily steps are advised.</p>}
-          {bmi >= 25 && <p><strong>Recommendation:</strong> Consider consulting a healthcare professional for a personalized health plan.</p>}
+          {bmi >= 18.5 && bmi < 23 && <p><strong>Status:</strong> Healthy weight range by Asian standards. Keep up the good work.</p>}
+          {bmi >= 23 && bmi < 25 && <p><strong>Recommendation:</strong> Approaching overweight for Indian populations. A moderate calorie deficit and increased daily steps are advised.</p>}
+          {bmi >= 25 && <p><strong>Recommendation:</strong> Above recommended cutoffs for metabolic health. Consider consulting a healthcare professional for a personalized health plan.</p>}
+
+          {waistRisk && waistRisk.level !== 'normal' && (
+            <div style={{ marginTop: '12px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: `4px solid ${waistRisk.color}` }}>
+              <p style={{ margin: 0 }}><strong>Waist Circumference Flag:</strong> {waistRisk.message}</p>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* SECTION 2: Foods You Should Eat More */}
+      {/* SECTION 4: Foods You Should Eat More (Dynamic Engine Output) */}
       <div className="diet-section">
-        <h3>✅ Foods You Should Eat More</h3>
-        <div className="foods-to-add-grid">
-          <div className="food-group">
-            <h4>🥩 Protein Sources</h4>
-            <p className="sub">Vegetarian:</p>
-            <p>Paneer, Greek yogurt, Milk, Curd, Tofu, Soy chunks, Dal, Rajma, Chickpeas, Moong, Black chana, Sprouts, Peanuts</p>
-            <p className="sub mt-2">Non-Vegetarian:</p>
-            <p>Eggs, Chicken breast, Fish, Lean meat</p>
-          </div>
-          <div className="food-group">
-            <h4>🍚 Healthy Carbs</h4>
-            <p>Brown rice, Oats, Whole wheat roti, Sweet potato, Poha, Millets, Quinoa, Fruits</p>
-          </div>
-          <div className="food-group">
-            <h4>🥑 Healthy Fats</h4>
-            <p>Almonds, Walnuts, Flax seeds, Pumpkin seeds, Sunflower seeds, Peanut butter, Olive oil, Avocado</p>
-          </div>
-          <div className="food-group">
-            <h4>🥦 Vegetables & Fruits</h4>
-            <p><strong>Veg:</strong> Spinach, Broccoli, Carrot, Beetroot, Tomato, Capsicum, Cucumber, Bottle gourd, Beans, Cauliflower</p>
-            <p><strong>Fruit:</strong> Banana, Apple, Orange, Guava, Papaya, Pomegranate, Watermelon, Kiwi, Berries</p>
-          </div>
+        <h3>✅ Personalized Food Recommendations</h3>
+        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', marginBottom: '16px' }}>
+          Based on your {dietaryPattern} diet {allergies.length > 0 && `(and marked allergies)`}, you are statistically more likely to be short on these nutrients. Focus on adding these to your meals:
+        </p>
+
+        <div className="recommendation-cards">
+          {foodAdditions.map(rec => (
+            <div key={rec.id} className="rec-card">
+              <div className="rec-header">
+                <h4>{rec.nutrientName}</h4>
+                <span className={`risk-badge risk-${rec.riskLevel}`}>{rec.riskLevel} risk</span>
+              </div>
+              <p className="rec-reason">{rec.reason}</p>
+              
+              <div className="rec-foods">
+                <strong>Best Sources For You:</strong>
+                <p>{rec.foods.length > 0 ? rec.foods.join(', ') : 'No direct whole-food sources available for your dietary pattern. Consider supplementation.'}</p>
+              </div>
+
+              {rec.pairingTip && (
+                <div className="rec-pairing">
+                  <p>{rec.pairingTip}</p>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* SECTION 11: Foods Based on BMI */}
+      {/* SECTION 5: Foods Based on BMI */}
       <div className="diet-section">
         <h3>🍔 Tailored For Your Body Type ({bmiCat})</h3>
         {bmiCat === 'Underweight' && (
           <div className="bmi-foods">
-            <p><strong>Increase:</strong> Milk, Paneer, Eggs, Rice, Potatoes, Nuts, Healthy oils, Bananas, Peanut butter.</p>
+            <p><strong>Increase:</strong> Milk/Plant milk, Paneer/Tofu, Eggs, Rice, Potatoes, Nuts, Healthy oils, Bananas, Peanut butter.</p>
           </div>
         )}
         {bmiCat === 'Normal' && (
@@ -215,10 +262,28 @@ export default function PersonalizedDietGuide({ data }) {
         )}
       </div>
 
-      {/* SECTION 3: Foods To Limit */}
+      {/* SECTION 6: Foods To Limit + Health Flags */}
       <div className="diet-section warning-section">
         <h3>🚫 Foods To Limit</h3>
         <p>Soft drinks, Sugary beverages, Energy drinks, Excess sweets, Candy, White bread, Deep fried food, Fast food, Processed meat, Packaged chips, Bakery products, Alcohol, Smoking, High sodium packaged foods, Instant noodles, Highly processed snacks.</p>
+
+        {healthNotes.length > 0 && (
+          <div className="health-flags-wrapper">
+            <h4 style={{ marginTop: '20px', color: '#ffb86c' }}>Based on your health flags:</h4>
+            {healthNotes.map(note => (
+              <div key={note.label} className="health-flag-box">
+                <h5>{note.label}</h5>
+                {note.foodsToLimitExtra && (
+                  <p><strong>Extra limits:</strong> {note.foodsToLimitExtra}</p>
+                )}
+                <p><strong>Guidance:</strong> {note.generalGuidance}</p>
+                {note.disclaimer && (
+                  <p className="health-disclaimer">Not medical advice. Discuss with your doctor.</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* SECTION 7: Goal Specific Recommendations */}
@@ -226,89 +291,120 @@ export default function PersonalizedDietGuide({ data }) {
         <h3>🎯 Goal Blueprint: {goal}</h3>
         {goal === 'Weight Loss' && (
           <ul>
-            <li>Maintain a calorie deficit</li>
+            <li>Maintain a calorie deficit (~20% below maintenance)</li>
             <li>High protein, moderate carbs, healthy fats</li>
-            <li>Eat more volume via vegetables</li>
-            <li>Walk after meals</li>
+            <li>Eat more volume via vegetables to stay full</li>
+            <li>Walk 10–15 mins after heavy meals</li>
             <li>Limit sugar and avoid liquid calories completely</li>
           </ul>
         )}
         {goal === 'Maintain' && (
           <ul>
             <li>Balanced diet at maintenance calories</li>
-            <li>Maintain sufficient protein intake</li>
+            <li>Maintain sufficient protein intake daily</li>
             <li>Maintain consistent physical activity</li>
             <li>Eat enough fruits and vegetables daily</li>
           </ul>
         )}
         {goal === 'Muscle Gain' && (
           <ul>
-            <li>Maintain a calorie surplus</li>
+            <li>Maintain a calorie surplus (~15% above maintenance)</li>
             <li>Protein intake around 1.6–2.0 g/kg body weight</li>
-            <li>Prioritize strength training</li>
+            <li>Prioritize progressive overload in strength training</li>
             <li>Consume carbs around workouts for energy/recovery</li>
-            <li>Get 8 hours of sleep for recovery</li>
+            <li>Get 8+ hours of sleep for recovery</li>
           </ul>
         )}
       </div>
 
-      {/* SECTION 6: Meal Timing */}
+      {/* SECTION 8: Meal Timing & Macros */}
       <div className="diet-section">
         <h3>⏱️ Meal Timing & Macros</h3>
         <div className="meal-timing-grid">
-          <div className="meal-box">
-            <h4>Breakfast</h4>
-            <span>20–25% calories</span>
-            <p className="mt-1 text-sm text-gray-400">Prefer protein-rich options like eggs, greek yogurt, or paneer.</p>
-          </div>
-          <div className="meal-box">
-            <h4>Lunch</h4>
-            <span>30–35% calories</span>
-          </div>
-          <div className="meal-box">
-            <h4>Dinner</h4>
-            <span>25–30% calories</span>
-          </div>
-          <div className="meal-box">
-            <h4>Snacks</h4>
-            <span>10–20% calories</span>
-          </div>
+          {mealsPerDay === '3' ? (
+            <>
+              <div className="meal-box">
+                <h4>Breakfast</h4>
+                <span>20–25% calories</span>
+                <p className="mt-1 text-sm text-gray-400">Prefer protein-rich options to stabilize blood sugar all day.</p>
+              </div>
+              <div className="meal-box">
+                <h4>Lunch</h4>
+                <span>35–40% calories</span>
+              </div>
+              <div className="meal-box">
+                <h4>Dinner</h4>
+                <span>25–30% calories</span>
+              </div>
+              <div className="meal-box">
+                <h4>Snacks</h4>
+                <span>10–15% calories</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="meal-box">
+                <h4>Early Meal</h4>
+                <span>15% calories</span>
+              </div>
+              <div className="meal-box">
+                <h4>Mid-Meal</h4>
+                <span>20% calories</span>
+              </div>
+              <div className="meal-box">
+                <h4>Meal 3</h4>
+                <span>20% calories</span>
+              </div>
+              <div className="meal-box">
+                <h4>Pre/Post Workout</h4>
+                <span>15% calories</span>
+              </div>
+              <div className="meal-box">
+                <h4>Last Meal</h4>
+                <span>20% calories</span>
+              </div>
+              <div className="meal-box">
+                <h4>Snack</h4>
+                <span>10% calories</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-      {/* SECTION 10: Indian Diet Suggestions */}
+      {/* SECTION 10: Indian Diet Suggestions (Regional) */}
       <div className="diet-section">
-        <h3>🍛 Indian Diet Suggestions</h3>
+        <h3>🍛 Meal Suggestions: {regionalMeals.label}</h3>
         <div className="indian-diet-grid">
           <div>
             <h4>Breakfast</h4>
-            <p>Poha, Upma, Oats, Idli, Dosa, Eggs, Milk</p>
+            <p>{regionalMeals.breakfast.join(', ')}</p>
           </div>
           <div>
             <h4>Lunch</h4>
-            <p>Dal, Rice, Roti, Paneer, Chicken, Vegetables, Curd</p>
+            <p>{regionalMeals.lunch.join(', ')}</p>
           </div>
           <div>
             <h4>Dinner</h4>
-            <p>Khichdi, Chapati, Dal, Paneer, Soup, Vegetables</p>
+            <p>{regionalMeals.dinner.join(', ')}</p>
           </div>
           <div>
             <h4>Healthy Snacks</h4>
-            <p>Fruit, Roasted chana, Makhana, Sprouts, Nuts, Buttermilk, Greek yogurt</p>
+            <p>{regionalMeals.snacks.join(', ')}</p>
           </div>
         </div>
       </div>
 
-      {/* SECTION 5: Healthy Eating Habits */}
+      {/* SECTION 11: Healthy Core Habits */}
       <div className="diet-section habit-list">
         <h3>🧠 Healthy Core Habits</h3>
         <ul>
-          <li>Eat protein in every meal</li>
+          <li>Eat a variety of protein sources across the day</li>
           <li>Eat vegetables with lunch and dinner</li>
           <li>Drink enough water</li>
           <li>Limit added sugar</li>
           <li>Avoid skipping breakfast</li>
-          <li>Prefer whole grains</li>
+          <li>Prefer whole grains over refined grains</li>
           <li>Reduce processed foods</li>
           <li>Choose healthy cooking methods</li>
           <li>Eat slowly</li>
@@ -318,9 +414,14 @@ export default function PersonalizedDietGuide({ data }) {
         </ul>
       </div>
 
-      {/* SECTION 8: Lifestyle Tips */}
+      {/* SECTION 11.5: Lifestyle Tips */}
       <div className="diet-section habit-list">
         <h3>🌟 Lifestyle Tips</h3>
+        {sleepHours && sleepHours < 7 && (
+          <p style={{ color: '#FACC15', padding: '12px', background: 'rgba(250,204,21,0.1)', borderRadius: '8px', marginBottom: '16px' }}>
+            <strong>Note:</strong> You indicated you sleep {sleepHours} hours a night. Adults generally need 7-9 hours for optimal metabolic health and muscle recovery. Consider prioritizing sleep hygiene.
+          </p>
+        )}
         <ul className="lifestyle-badges">
           <li>Hydration</li>
           <li>Stress management</li>
@@ -333,28 +434,41 @@ export default function PersonalizedDietGuide({ data }) {
         </ul>
       </div>
 
-      {/* SECTION 4: Daily Micronutrient Checklist */}
+      {/* SECTION 4 (Updated): Daily Micronutrient Checklist */}
       <div className="diet-section p-0 overflow-hidden">
-        <h3 className="p-4 m-0 border-b border-[rgba(255,255,255,0.06)]">🧬 Daily Micronutrient Checklist</h3>
+        <h3 className="p-4 m-0 border-b border-[rgba(255,255,255,0.06)]">
+          🧬 Micronutrient Checklist
+          <span style={{ fontSize: '14px', marginLeft: '12px', color: '#ff79c6', fontWeight: 'normal' }}>
+            Highlighted rows are higher risk for {dietaryPattern}s
+          </span>
+        </h3>
         <div className="micro-table-wrap">
           <table className="micro-table">
             <thead>
               <tr>
                 <th>Nutrient</th>
-                <th>Amount</th>
+                <th>RDA (ICMR-NIN 2020)</th>
                 <th>Importance</th>
-                <th>Best Sources</th>
+                <th>Recommendation</th>
               </tr>
             </thead>
             <tbody>
-              {MICRONUTRIENTS.map((m, i) => (
-                <tr key={i}>
-                  <td><strong>{m.name}</strong></td>
-                  <td>{m.amount}</td>
-                  <td>{m.importance}</td>
-                  <td>{m.sources}</td>
-                </tr>
-              ))}
+              {NUTRIENT_DB.map((m, i) => {
+                const isRisk = userRiskNutrients.includes(m.id);
+                return (
+                  <tr key={i} className={isRisk ? 'risk-row' : ''}>
+                    <td>
+                      <strong>{m.name}</strong>
+                      {isRisk && <span title="Elevated risk based on your dietary pattern" style={{ marginLeft: '6px', color: '#ff79c6' }}>⚠️</span>}
+                    </td>
+                    <td>{m.rda}</td>
+                    <td>{m.importance}</td>
+                    <td>
+                      {m.foodSourcesByPreference[dietaryPattern]?.slice(0, 3).join(', ') || 'Supplementation may be required.'}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

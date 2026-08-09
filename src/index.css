@@ -2398,3 +2398,197 @@ body {
   line-height: 1.6;
 }
 
+/* ========================================
+   Diet Guide — Refine & Personalization UI
+   ======================================== */
+
+.diet-pattern-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.refine-panel {
+  margin-top: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.refine-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.refine-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.refine-content {
+  padding: 0 20px 20px 20px;
+}
+
+.chip-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.chip-btn {
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chip-btn-active {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: var(--emerald);
+}
+
+/* Personalized Recommendations Engine Output */
+.recommendation-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .recommendation-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.rec-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.rec-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.rec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rec-header h4 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--white);
+}
+
+.risk-badge {
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.risk-severe { background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+.risk-high { background: rgba(249, 115, 22, 0.15); color: #F97316; border: 1px solid rgba(249, 115, 22, 0.3); }
+.risk-moderate { background: rgba(250, 204, 21, 0.15); color: #FACC15; border: 1px solid rgba(250, 204, 21, 0.3); }
+
+.rec-reason {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+  line-height:1.5;
+}
+
+.rec-foods {
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,0.03);
+  padding: 10px;
+  border-radius: 8px;
+  line-height:1.5;
+}
+
+.rec-foods strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--emerald);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.rec-pairing {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 8px;
+  line-height: 1.4;
+}
+
+/* Health Flags */
+.health-flags-wrapper {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.health-flag-box {
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid #ffb86c;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 12px;
+}
+
+.health-flag-box h5 {
+  color: #ffb86c;
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.health-flag-box p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.health-disclaimer {
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-style: italic;
+  margin-bottom: 0 !important;
+}
+
+.risk-row td {
+  background-color: rgba(255, 121, 198, 0.1);
+}
