@@ -2592,3 +2592,17 @@ body {
 .risk-row td {
   background-color: rgba(255, 121, 198, 0.1);
 }
+
+.diet-guide-body {
+  grid-template-columns: 1fr;
+}
+
+.diet-guide-body .calc-input-side {
+  border-right: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 2rem;
+}
+
+.diet-guide-body .calc-result-side {
+  padding-top: 2rem;
+}

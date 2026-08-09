@@ -31,10 +31,11 @@ export default function DietGuidePage() {
   const [gender, setGender] = useState('male');
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
-  const [heightCm, setHeightCm] = useState('');
+  const [heightFt, setHeightFt] = useState('');
+  const [heightIn, setHeightIn] = useState('');
   const [activityLevel, setActivityLevel] = useState(2);
   const [dietaryPattern, setDietaryPattern] = useState('vegetarian');
-  const [waistCm, setWaistCm] = useState('');
+  const [waistInches, setWaistInches] = useState('');
 
   // Tier 2 — Collapsible
   const [allergies, setAllergies] = useState([]);
@@ -49,16 +50,23 @@ export default function DietGuidePage() {
   const [calculated, setCalculated] = useState(false);
   const [refineOpen, setRefineOpen] = useState(false);
 
+  const heightCm = useMemo(() => {
+    const ft = parseFloat(heightFt) || 0;
+    const inc = parseFloat(heightIn) || 0;
+    if (!ft && !inc) return null;
+    return (ft * 30.48) + (inc * 2.54);
+  }, [heightFt, heightIn]);
+
   const bmi = useMemo(() => {
     const w = parseFloat(weight);
-    const h = parseFloat(heightCm) / 100;
+    const h = heightCm ? heightCm / 100 : null;
     if (!w || !h || h <= 0) return null;
     return w / (h * h);
   }, [weight, heightCm]);
 
   const maintenanceCalories = useMemo(() => {
     const w = parseFloat(weight);
-    const h = parseFloat(heightCm);
+    const h = heightCm;
     const a = parseInt(age);
     if (!w || !h || !a) return null;
     let bmr;
@@ -122,7 +130,7 @@ export default function DietGuidePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.2 }}
       >
-        <div className="calc-body">
+        <div className="calc-body diet-guide-body">
           {/* Input Side */}
           <div className="calc-input-side">
             {/* Gender */}
@@ -180,21 +188,34 @@ export default function DietGuidePage() {
               </div>
             </div>
 
-            {/* Height */}
+            {/* Height (ft/in) */}
             <div className="calc-field">
-              <label className="calc-label" htmlFor="dg-height">Height</label>
-              <div className="calc-input-wrap">
-                <input
-                  id="dg-height"
-                  type="number"
-                  className="calc-input"
-                  placeholder="175"
-                  value={heightCm}
-                  onChange={(e) => { setHeightCm(e.target.value); setCalculated(false); }}
-                  min="100"
-                  max="250"
-                />
-                <span className="calc-input-unit">cm</span>
+              <label className="calc-label">Height</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="calc-input-wrap" style={{ flex: 1 }}>
+                  <input
+                    type="number"
+                    className="calc-input"
+                    placeholder="5"
+                    value={heightFt}
+                    onChange={(e) => { setHeightFt(e.target.value); setCalculated(false); }}
+                    min="3"
+                    max="8"
+                  />
+                  <span className="calc-input-unit">ft</span>
+                </div>
+                <div className="calc-input-wrap" style={{ flex: 1 }}>
+                  <input
+                    type="number"
+                    className="calc-input"
+                    placeholder="9"
+                    value={heightIn}
+                    onChange={(e) => { setHeightIn(e.target.value); setCalculated(false); }}
+                    min="0"
+                    max="11"
+                  />
+                  <span className="calc-input-unit">in</span>
+                </div>
               </div>
             </div>
 
@@ -246,13 +267,13 @@ export default function DietGuidePage() {
                   id="dg-waist"
                   type="number"
                   className="calc-input"
-                  placeholder="80"
-                  value={waistCm}
-                  onChange={(e) => { setWaistCm(e.target.value); setCalculated(false); }}
-                  min="40"
-                  max="200"
+                  placeholder="32"
+                  value={waistInches}
+                  onChange={(e) => { setWaistInches(e.target.value); setCalculated(false); }}
+                  min="15"
+                  max="80"
                 />
-                <span className="calc-input-unit">cm</span>
+                <span className="calc-input-unit">in</span>
               </div>
             </div>
 
@@ -424,7 +445,7 @@ export default function DietGuidePage() {
                     activityLevelIndex: activityLevel,
                     maintenanceCalories,
                     dietaryPattern,
-                    waistCm: waistCm ? parseFloat(waistCm) : null,
+                    waistCm: waistInches ? parseFloat(waistInches) * 2.54 : null,
                     allergies,
                     healthFlags,
                     region,
