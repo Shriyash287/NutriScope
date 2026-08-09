@@ -66,6 +66,9 @@ export default function DietGuidePage() {
         <p className="section-subheading">
           Enter your metrics to generate a comprehensive, personalized diet guide tailored exclusively for your body and goals.
         </p>
+        <p className="section-subheading" style={{ fontSize: '14px', fontStyle: 'italic', opacity: 0.7, marginTop: '8px' }}>
+          *Reference values follow ICMR-NIN 2020 and WHO Asia-Pacific guidelines for Indian populations; this tool is for educational purposes and does not replace professional medical or dietetic advice.
+        </p>
       </motion.div>
 
       <motion.div

@@ -52,12 +52,13 @@ export default function PersonalizedDietGuide({ data }) {
     const waterMin = (35 * w) / 1000;
     const waterMax = (40 * w) / 1000;
     
-    const fiber = gender === 'male' ? 38 : 25;
+    // Fiber: 30g per 2000 kcal (ICMR-NIN 2020)
+    const fiber = Math.round((totalKcal / 2000) * 30);
 
     let bmiCat = 'Normal';
     if (bmi < 18.5) bmiCat = 'Underweight';
-    else if (bmi >= 25 && bmi < 30) bmiCat = 'Overweight';
-    else if (bmi >= 30) bmiCat = 'Obese';
+    else if (bmi >= 23 && bmi < 25) bmiCat = 'Overweight';
+    else if (bmi >= 25) bmiCat = 'Obese';
 
     return {
       targetCalories: totalKcal,
@@ -154,9 +155,9 @@ export default function PersonalizedDietGuide({ data }) {
           <h3>⚠️ BMI Health Insight</h3>
           <p>Your BMI is {bmi.toFixed(1)}.</p>
           {bmi < 18.5 && <p><strong>Recommendation:</strong> Healthy weight gain is advised. Focus on nutrient-dense, higher-calorie foods.</p>}
-          {bmi >= 18.5 && bmi <= 24.9 && <p><strong>Status:</strong> Healthy weight. Keep up the good work and maintain a balanced lifestyle.</p>}
-          {bmi >= 25 && bmi <= 29.9 && <p><strong>Recommendation:</strong> A moderate calorie deficit and increased daily steps are advised.</p>}
-          {bmi >= 30 && <p><strong>Recommendation:</strong> Consider consulting a healthcare professional for a personalized health plan.</p>}
+          {bmi >= 18.5 && bmi < 23 && <p><strong>Status:</strong> Healthy weight. Keep up the good work and maintain a balanced lifestyle.</p>}
+          {bmi >= 23 && bmi < 25 && <p><strong>Recommendation:</strong> A moderate calorie deficit and increased daily steps are advised.</p>}
+          {bmi >= 25 && <p><strong>Recommendation:</strong> Consider consulting a healthcare professional for a personalized health plan.</p>}
         </div>
       </div>
 

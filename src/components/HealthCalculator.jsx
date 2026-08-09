@@ -10,8 +10,8 @@ const activityLevels = [
 
 function getBmiCategory(bmi) {
   if (bmi < 18.5) return { label: 'Underweight', color: '#38BDF8', emoji: '🔹', advice: 'Consider a calorie surplus with nutrient-dense foods to reach a healthy weight.' };
-  if (bmi < 25) return { label: 'Normal', color: '#22C55E', emoji: '✅', advice: 'Great job! Maintain your current habits with a balanced diet and regular activity.' };
-  if (bmi < 30) return { label: 'Overweight', color: '#FACC15', emoji: '⚠️', advice: 'A slight calorie deficit with regular exercise can help you reach a healthier range.' };
+  if (bmi < 23) return { label: 'Normal', color: '#22C55E', emoji: '✅', advice: 'Great job! Maintain your current habits with a balanced diet and regular activity.' };
+  if (bmi < 25) return { label: 'Overweight', color: '#FACC15', emoji: '⚠️', advice: 'A slight calorie deficit with regular exercise can help you reach a healthier range.' };
   return { label: 'Obese', color: '#F97316', emoji: '🔴', advice: 'Consult a healthcare provider for a personalized plan combining diet and exercise.' };
 }
 
@@ -53,7 +53,7 @@ function BmiGauge({ bmi }) {
           style={{ filter: `drop-shadow(0 0 8px ${category.color}50)` }}
         />
         {/* Tick marks */}
-        {[18.5, 25, 30].map((val) => {
+        {[18.5, 23, 25].map((val) => {
           const angle = Math.PI - ((getBmiBarPercent(val) / 100) * Math.PI);
           const x = 110 + 90 * Math.cos(angle);
           const y = 120 - 90 * Math.sin(angle);
@@ -79,6 +79,9 @@ function BmiGauge({ bmi }) {
           {category.emoji} {category.label}
         </span>
       </div>
+      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: '16px', maxWidth: '280px', lineHeight: '1.4' }}>
+        Categories use WHO Asia-Pacific / ICMR-recommended cutoffs for Indian populations, which are lower than global WHO standards.
+      </p>
     </div>
   );
 }
@@ -233,6 +236,9 @@ export default function HealthCalculator() {
         <p className="section-subheading">
           Calculate your BMI and daily maintenance calories using scientifically
           validated formulas. Get personalized macro splits and actionable goals.
+        </p>
+        <p className="section-subheading" style={{ fontSize: '14px', fontStyle: 'italic', opacity: 0.7, marginTop: '8px' }}>
+          *Reference values follow ICMR-NIN 2020 and WHO Asia-Pacific guidelines for Indian populations; this tool is for educational purposes and does not replace professional medical or dietetic advice.
         </p>
       </motion.div>
 

@@ -10,7 +10,7 @@ const NUTRIENTS = [
     benefits: 'Essential for muscle repair, immunity, and hormone production.',
     symptoms: 'Weak muscles, fatigue, slow recovery.',
     foodSources: 'Eggs, Milk, Paneer, Chicken, Fish, Soy, Dal, Beans, Greek yogurt',
-    rda: '0.8–1.0 g/kg (sedentary), 1.2–2.2 g/kg (active)',
+    rda: '0.83 g/kg (sedentary minimum, ICMR-NIN 2020), 1.2–2.2 g/kg (active)',
     supplement: 'Protein powder only if food intake is insufficient.',
     details: 'Important for recovery, especially with an active lifestyle.'
   },
@@ -22,7 +22,7 @@ const NUTRIENTS = [
     benefits: 'Crucial for bone strength, immunity, mood, and hormones.',
     symptoms: 'Bone pain, weakness, fatigue, frequent illness.',
     foodSources: 'Sunlight, Egg yolk, Fish, Fortified milk',
-    rda: '400-800 IU',
+    rda: '800 IU/d (both sexes)',
     supplement: 'Often required after blood testing.',
     details: 'Despite abundant sunlight in India, deficiency is widespread due to indoor lifestyles, clothing, pollution, and sunscreen use.'
   },
@@ -34,7 +34,7 @@ const NUTRIENTS = [
     benefits: 'Maintains nervous system and brain health, aids in DNA synthesis.',
     symptoms: 'Tingling, fatigue, memory issues, anemia.',
     foodSources: 'Eggs, Dairy, Meat, Fish',
-    rda: '2.4 mcg',
+    rda: '2.5 mcg/d (Adults)',
     supplement: 'Commonly needed for strict vegetarians or those with confirmed deficiency.',
     details: 'Especially lacking among vegetarians and vegans as it is primarily found in animal products.'
   },
@@ -46,7 +46,7 @@ const NUTRIENTS = [
     benefits: 'Vital for oxygen transport, energy levels, and brain function.',
     symptoms: 'Fatigue, pale skin, hair fall, breathlessness.',
     foodSources: 'Spinach, Rajma, Chana, Meat, Jaggery, Seeds',
-    rda: '8-18 mg (higher for women)',
+    rda: '19mg/d (both sexes, adult)',
     supplement: 'If prescribed by a doctor.',
     details: 'Especially lacking among women and adolescents. Consume with Vitamin C-rich foods to improve absorption.'
   },
@@ -58,7 +58,7 @@ const NUTRIENTS = [
     benefits: 'Builds and maintains strong bones and teeth, essential for muscle and nerve function.',
     symptoms: 'Weak bones, muscle cramps.',
     foodSources: 'Milk, Paneer, Yogurt, Sesame, Ragi',
-    rda: '1000 mg',
+    rda: '1000 mg/d (both sexes, adult)',
     supplement: 'If dietary intake is inadequate.',
     details: ''
   },
@@ -70,7 +70,7 @@ const NUTRIENTS = [
     benefits: 'Improves sleep quality, aids muscle recovery, supports heart health.',
     symptoms: 'Muscle cramps, poor sleep, fatigue.',
     foodSources: 'Pumpkin seeds, Almonds, Cashews, Dark chocolate, Spinach',
-    rda: '310-420 mg',
+    rda: '340mg/d (Adult Men), 310mg/d (Adult Women)',
     supplement: 'Magnesium glycinate/citrate if deficient or for sleep issues.',
     details: ''
   },
@@ -82,7 +82,7 @@ const NUTRIENTS = [
     benefits: 'Boosts immunity, maintains skin health, supports testosterone and wound healing.',
     symptoms: 'Hair loss, slow healing, acne.',
     foodSources: 'Pumpkin seeds, Meat, Eggs, Dairy, Lentils',
-    rda: '8-11 mg',
+    rda: 'Men 17mg/d, Women 13.2mg/d',
     supplement: 'If dietary intake is persistently low.',
     details: ''
   },
@@ -94,7 +94,7 @@ const NUTRIENTS = [
     benefits: 'Supports brain function, heart health, eye health, and reduces inflammation.',
     symptoms: 'Dry skin, poor focus, joint pain.',
     foodSources: 'Salmon, Sardines, Walnuts, Flaxseed, Chia',
-    rda: '1.1-1.6 g',
+    rda: '1.1-1.6 g/d',
     supplement: 'Fish oil or algae oil if dietary intake is low.',
     details: ''
   },
@@ -106,7 +106,7 @@ const NUTRIENTS = [
     benefits: 'Boosts immunity, aids collagen production, improves iron absorption.',
     symptoms: 'Scurvy, slow healing, frequent colds.',
     foodSources: 'Amla, Orange, Lemon, Guava, Kiwi, Bell peppers',
-    rda: '65-90 mg',
+    rda: 'Adult Men 80mg/d, Adult Women 65mg/d',
     supplement: 'Rarely needed if eating enough fruits and vegetables.',
     details: ''
   },
@@ -118,7 +118,7 @@ const NUTRIENTS = [
     benefits: 'Essential for cell growth, healthy pregnancy, and DNA formation.',
     symptoms: 'Fatigue, gray hair, mouth sores.',
     foodSources: 'Spinach, Lentils, Beans, Citrus fruits',
-    rda: '400 mcg',
+    rda: 'Adult Men 300µg/d, Adult Women 200µg/d',
     supplement: 'Crucial supplement for pregnant women.',
     details: ''
   },
@@ -130,7 +130,7 @@ const NUTRIENTS = [
     benefits: 'Supports healthy vision, skin, and immune system.',
     symptoms: 'Night blindness, dry skin.',
     foodSources: 'Carrots, Sweet potato, Mango, Liver, Eggs',
-    rda: '700-900 mcg',
+    rda: '1000 µg/d (Adult Men), 840 µg/d (Adult Women)',
     supplement: 'Rarely needed unless specifically recommended.',
     details: ''
   },
@@ -142,7 +142,7 @@ const NUTRIENTS = [
     benefits: 'Powerful antioxidant for skin and hair health.',
     symptoms: 'Muscle weakness, vision problems.',
     foodSources: 'Almonds, Sunflower seeds, Avocado',
-    rda: '15 mg',
+    rda: '10 mg/d (Adult Men), 7.5 mg/d (Adult Women)',
     supplement: 'Rarely needed.',
     details: ''
   },
@@ -154,7 +154,7 @@ const NUTRIENTS = [
     benefits: 'Essential for proper blood clotting and bone metabolism.',
     symptoms: 'Easy bruising, excessive bleeding.',
     foodSources: 'Spinach, Kale, Broccoli',
-    rda: '90-120 mcg',
+    rda: '55 µg/d (Adult Men, Women)',
     supplement: 'Rarely needed.',
     details: ''
   },
@@ -166,7 +166,7 @@ const NUTRIENTS = [
     benefits: 'Maintains healthy blood pressure and heart function.',
     symptoms: 'Muscle weakness, cramps, irregular heartbeat.',
     foodSources: 'Banana, Coconut water, Potato, Beans',
-    rda: '2600-3400 mg',
+    rda: '3500 mg/d (Adults)',
     supplement: 'Rarely recommended without medical supervision.',
     details: ''
   },
@@ -178,7 +178,7 @@ const NUTRIENTS = [
     benefits: 'Supports thyroid function and acts as an antioxidant.',
     symptoms: 'Fatigue, muscle weakness, mental fog.',
     foodSources: 'Eggs, Seafood, Whole grains',
-    rda: '55 mcg',
+    rda: '40 µg/d (Adults)',
     supplement: 'Rarely needed.',
     details: ''
   },
@@ -190,7 +190,7 @@ const NUTRIENTS = [
     benefits: 'Regulates thyroid hormones and overall metabolism.',
     symptoms: 'Goiter, weight gain, fatigue.',
     foodSources: 'Iodized salt, Seafood, Dairy',
-    rda: '150 mcg',
+    rda: '150 mcg/d (Adults)',
     supplement: 'Rarely needed.',
     details: 'Deficiency is lower in India due to successful iodized salt programs.'
   }
