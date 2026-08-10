@@ -10,6 +10,7 @@ import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import EssentialNutrients from './components/EssentialNutrients';
 import DietGuidePage from './components/DietGuidePage';
+import LearnHub from './components/LearnHub';
 
 
 const pageVariants = {
@@ -72,6 +73,12 @@ export default function App() {
         return (
           <TabPage key="diet-guide">
             <DietGuidePage />
+          </TabPage>
+        );
+      case 'learn':
+        return (
+          <TabPage key="learn">
+            <LearnHub />
           </TabPage>
         );
       default:

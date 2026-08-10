@@ -83,6 +83,13 @@ export default function DietGuidePage() {
   const handleCalculate = () => {
     if (isValid && bmi !== null && maintenanceCalories !== null) {
       setCalculated(true);
+      const profile = JSON.parse(localStorage.getItem('nutriscope_profile') || '{}');
+      localStorage.setItem('nutriscope_profile', JSON.stringify({
+        ...profile,
+        calculated: true,
+        dietaryPattern,
+        healthFlags
+      }));
     }
   };
 

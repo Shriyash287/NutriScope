@@ -8,6 +8,7 @@ const tabs = [
   { id: 'health-tools', label: 'Health Tools', emoji: '⚡' },
   { id: 'diet-guide', label: 'Diet Guide', emoji: '🥑' },
   { id: 'nutrients', label: 'Nutrients', emoji: '🧬' },
+  { id: 'learn', label: 'Learn', emoji: '📚' },
 ];
 
 export default function Navbar({ activeTab, onTabChange }) {
