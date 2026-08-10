@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { videoLibrary } from "../data/videoLibrary";
 import { blogPosts } from "../data/blogPosts";
@@ -45,22 +46,29 @@ export default function LearnHub({ userProfile = {} }) {
   const thumbUrl = (youtubeId) => `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
 
   return (
-    <section className="learn-hub" style={styles.section}>
+    <section className="calculator-section" style={{ paddingTop: '100px' }}>
       {/* ---------- Header + compliance disclaimer (spec §10) ---------- */}
-      <div style={styles.header}>
-        <h2 style={styles.h2}>
-          <span aria-hidden>📚</span> Learn
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        style={{ textAlign: 'center', marginBottom: '40px', padding: '0 20px' }}
+      >
+        <div className="section-label">📚 Learn Hub</div>
+        <h2 className="section-heading">
+          Evidence-Based<br />
+          <span className="gradient-text">Nutrition Education.</span>
         </h2>
-        <p style={styles.disclaimer}>
+        <p className="section-subheading" style={{ maxWidth: '800px', margin: '0 auto', fontSize: '13px', fontStyle: 'italic', opacity: 0.7 }}>
           Videos and articles here are for general education. NutriScope
           doesn't produce or fact-check third-party video content — claims
           made by outside creators are theirs, not verified medical advice.
           Always confirm with a doctor or registered dietitian.
         </p>
-      </div>
+      </motion.div>
 
       {/* ---------- Sub-navigation: Videos | Blogs (separate sections) ---------- */}
-      <div role="tablist" style={styles.subTabs}>
+      <div role="tablist" className="gender-selector" style={{ justifyContent: 'center', marginBottom: '40px' }}>
         <button
           role="tab"
           aria-selected={learnSubTab === "videos"}
@@ -69,7 +77,7 @@ export default function LearnHub({ userProfile = {} }) {
             setSelectedBlogSlug(null);
             setActiveVideo(null);
           }}
-          style={learnSubTab === "videos" ? { ...styles.subTab, ...styles.subTabActive } : styles.subTab}
+          className={`gender-btn ${learnSubTab === "videos" ? "gender-btn-active" : ""}`}
         >
           🎬 Videos
         </button>
@@ -80,7 +88,7 @@ export default function LearnHub({ userProfile = {} }) {
             setLearnSubTab("blogs");
             setActiveVideo(null);
           }}
-          style={learnSubTab === "blogs" ? { ...styles.subTab, ...styles.subTabActive } : styles.subTab}
+          className={`gender-btn ${learnSubTab === "blogs" ? "gender-btn-active" : ""}`}
         >
           📝 Blogs
         </button>
@@ -88,14 +96,14 @@ export default function LearnHub({ userProfile = {} }) {
 
       {/* ============================ VIDEOS SUBPAGE ============================ */}
       {learnSubTab === "videos" && (
-        <div style={styles.subPage}>
+        <div className="calculator-container" style={{ flexDirection: 'column', padding: '0 20px', maxWidth: '1200px', margin: '0 auto' }}>
           {/* Personalized row — only when a Diet Guide profile exists */}
           {userProfile?.calculated && personalizationReasons.length > 0 && (
-            <div style={styles.personalStrip}>
-              <p style={styles.personalLine}>
+            <div className="diet-section warning-section" style={{ marginBottom: '32px' }}>
+              <p style={{ fontSize: '15px', color: '#ff79c6', marginBottom: '20px', fontWeight: '500' }}>
                 ✨ Because {personalizationReasons.slice(0, 2).join(" and ")}:
               </p>
-              <div style={styles.grid}>
+              <div className="recommendation-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
                 {personalizedVideos.map((v) => (
                   <VideoCard
                     key={v.id}
@@ -110,15 +118,15 @@ export default function LearnHub({ userProfile = {} }) {
           )}
 
           {/* Full library — every user sees the whole curated collection */}
-          <h3 style={styles.h3}>
+          <h3>
             {userProfile?.calculated ? "All curated videos" : "Featured videos"}
           </h3>
-          <p style={styles.subtle}>
+          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '24px' }}>
             {userProfile?.calculated
               ? "Hand-picked, embedding-verified videos. Fill in the Diet Guide to see picks ranked for you."
               : "Complete the Diet Guide to see videos ranked for your profile."}
           </p>
-          <div style={styles.grid}>
+          <div className="recommendation-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
             {videoLibrary.map((v) => {
               const score = userProfile?.calculated ? scoreContent(v, userProfile) : null;
               return (
@@ -134,8 +142,8 @@ export default function LearnHub({ userProfile = {} }) {
           </div>
 
           {videoLibrary.length === 0 && (
-            <div style={styles.empty}>
-              <p>🎬 New content coming soon.</p>
+            <div className="calc-placeholder">
+              <div className="calc-placeholder-icon">🎬</div><h3 className="calc-placeholder-title">New content coming soon.</h3>
             </div>
           )}
         </div>
@@ -143,13 +151,13 @@ export default function LearnHub({ userProfile = {} }) {
 
       {/* ============================= BLOGS SUBPAGE ============================= */}
       {learnSubTab === "blogs" && !selectedBlog && (
-        <div style={styles.subPage}>
+        <div className="calculator-container" style={{ flexDirection: 'column', padding: '0 20px', maxWidth: '1200px', margin: '0 auto' }}>
           {userProfile?.calculated && personalizationReasons.length > 0 && (
-            <div style={styles.personalStrip}>
-              <p style={styles.personalLine}>
+            <div className="diet-section warning-section" style={{ marginBottom: '32px' }}>
+              <p style={{ fontSize: '15px', color: '#ff79c6', marginBottom: '20px', fontWeight: '500' }}>
                 ✨ Because {personalizationReasons.slice(0, 2).join(" and ")}:
               </p>
-              <div style={styles.blogList}>
+              <div className="recommendation-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))' }}>
                 {blogPosts
                   .map((p) => ({ ...p, relevanceScore: scoreContent(p, userProfile) }))
                   .sort((a, b) => b.relevanceScore - a.relevanceScore)
@@ -158,11 +166,11 @@ export default function LearnHub({ userProfile = {} }) {
                     <button
                       key={p.slug}
                       onClick={() => setSelectedBlogSlug(p.slug)}
-                      style={styles.blogExcerptCard}
+                      className="feature-card" style={{ textAlign: 'left', border: 'none', padding: '24px', display: 'flex', flexDirection: 'column' }}
                     >
-                      <h4 style={styles.blogTitle}>{p.title}</h4>
-                      <p style={styles.blogExcerpt}>{p.excerpt}</p>
-                      <span style={styles.blogMeta}>
+                      <h4 style={{ fontSize: '22px', marginBottom: '12px', lineHeight: '1.3' }}>{p.title}</h4>
+                      <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px', lineHeight: '1.6', flex: 1, marginBottom: '24px' }}>{p.excerpt}</p>
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'block' }}>
                         {p.readTimeMinutes} min read · NutriScope Editorial
                       </span>
                     </button>
@@ -171,17 +179,17 @@ export default function LearnHub({ userProfile = {} }) {
             </div>
           )}
 
-          <h3 style={styles.h3}>All articles</h3>
-          <div style={styles.blogList}>
+          <h3>All articles</h3>
+          <div className="recommendation-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))' }}>
             {blogPosts.map((p) => (
               <button
                 key={p.slug}
                 onClick={() => setSelectedBlogSlug(p.slug)}
-                style={styles.blogExcerptCard}
+                className="feature-card" style={{ textAlign: 'left', border: 'none', padding: '24px', display: 'flex', flexDirection: 'column' }}
               >
-                <h4 style={styles.blogTitle}>{p.title}</h4>
-                <p style={styles.blogExcerpt}>{p.excerpt}</p>
-                <span style={styles.blogMeta}>
+                <h4 style={{ fontSize: '22px', marginBottom: '12px', lineHeight: '1.3' }}>{p.title}</h4>
+                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px', lineHeight: '1.6', flex: 1, marginBottom: '24px' }}>{p.excerpt}</p>
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'block' }}>
                   {p.readTimeMinutes} min read · NutriScope Editorial
                 </span>
               </button>
@@ -192,20 +200,20 @@ export default function LearnHub({ userProfile = {} }) {
 
       {/* ---------------- Blog reading view (state-driven, no route) ---------------- */}
       {learnSubTab === "blogs" && selectedBlog && (
-        <div style={styles.subPage}>
-          <button onClick={() => setSelectedBlogSlug(null)} style={styles.backBtn}>
+        <div className="calculator-container" style={{ flexDirection: 'column', padding: '0 20px', maxWidth: '1200px', margin: '0 auto' }}>
+          <button onClick={() => setSelectedBlogSlug(null)} className="calc-reset-btn" style={{ alignSelf: 'flex-start', marginBottom: '20px' }}>
             ← Back to all articles
           </button>
-          <article style={styles.blogArticle}>
-            <h2 style={styles.blogArticleTitle}>{selectedBlog.title}</h2>
-            <p style={styles.blogMeta}>
+          <article style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '24px', padding: '40px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <h2 className="section-heading" style={{ fontSize: '36px', marginBottom: '16px', lineHeight: '1.2' }}>{selectedBlog.title}</h2>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'block' }}>
               By {selectedBlog.author} · {selectedBlog.publishedDate} ·{" "}
               {selectedBlog.readTimeMinutes} min read
             </p>
-            <div style={styles.markdownBody}>
+            <div className="blog-content" style={{ lineHeight: '1.8', fontSize: '16px', color: 'rgba(255,255,255,0.85)' }}>
               <ReactMarkdown>{selectedBlog.body}</ReactMarkdown>
             </div>
-            <p style={styles.blogFootnote}>
+            <p style={{ fontSize: '13px', fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', marginTop: '40px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
               General education only — not medical advice. For anything
               specific to your health, consult a doctor or registered
               dietitian.
@@ -250,20 +258,20 @@ export default function LearnHub({ userProfile = {} }) {
 /* ---------------------------------------------------------------------------- */
 function VideoCard({ video, onOpen, thumbUrl, score }) {
   return (
-    <button onClick={() => onOpen(video)} style={styles.videoCard} aria-label={`Play ${video.title}`}>
+    <button onClick={() => onOpen(video)} className="feature-card" style={{ padding: 0, textAlign: 'left', border: 'none', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }} aria-label={`Play ${video.title}`}>
       <img
         src={thumbUrl(video.youtubeId)}
         alt={`Thumbnail for ${video.title}`}
         loading="lazy"
-        style={styles.videoThumb}
+        style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
       />
-      <div style={styles.videoBody}>
-        <h4 style={styles.videoTitle}>{video.title}</h4>
-        <p style={styles.videoChannel}>
+      <div style={{ padding: '20px' }}>
+        <h4 style={{ fontSize: '18px', marginBottom: '8px', lineHeight: '1.4' }}>{video.title}</h4>
+        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', margin: 0 }}>
           {video.channelName} · {video.durationLabel}
         </p>
         {score !== null && score > 0 && (
-          <span style={styles.matchBadge}>Match score: {score}</span>
+          <span className="risk-badge risk-low" style={{ marginTop: '12px', display: 'inline-block' }}>Match score: {score}</span>
         )}
       </div>
     </button>
@@ -271,113 +279,10 @@ function VideoCard({ video, onOpen, thumbUrl, score }) {
 }
 
 /* ============================================================================
- * Inline styles — drop-in so the component works without your CSS pipeline.
- * If you want to use your site's glassmorphism classes instead, delete this
- * object and swap the style={...} props for className="en-glass-card" etc.
+ * Inline styles — mostly cleared out in favor of site classes.
+ * Modal styles remain inline as there may not be a global modal setup.
  * ============================================================================ */
 const styles = {
-  section: { padding: "2.5rem 1rem", maxWidth: 1100, margin: "0 auto" },
-  header: { marginBottom: "1.5rem" },
-  h2: { fontSize: "2rem", fontWeight: 700, marginBottom: "0.5rem" },
-  disclaimer: {
-    fontSize: "0.85rem",
-    opacity: 0.75,
-    maxWidth: 780,
-    lineHeight: 1.5,
-    fontStyle: "italic",
-  },
-  subTabs: { display: "flex", gap: "0.75rem", marginBottom: "2rem", flexWrap: "wrap" },
-  subTab: {
-    padding: "0.65rem 1.4rem",
-    borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.25)",
-    background: "rgba(255,255,255,0.06)",
-    color: "inherit",
-    fontSize: "0.95rem",
-    cursor: "pointer",
-    backdropFilter: "blur(8px)",
-  },
-  subTabActive: {
-    background: "linear-gradient(135deg, #4f8cff, #7c5cff)",
-    border: "1px solid transparent",
-    fontWeight: 600,
-  },
-  subPage: { display: "flex", flexDirection: "column", gap: "1.5rem" },
-  personalStrip: {
-    background: "rgba(79,140,255,0.10)",
-    border: "1px solid rgba(79,140,255,0.35)",
-    borderRadius: 16,
-    padding: "1.25rem",
-  },
-  personalLine: { fontWeight: 600, marginBottom: "1rem", fontSize: "0.95rem" },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-    gap: "1.25rem",
-  },
-  h3: { fontSize: "1.25rem", fontWeight: 600 },
-  subtle: { fontSize: "0.85rem", opacity: 0.7 },
-  videoCard: {
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    borderRadius: 14,
-    overflow: "hidden",
-    textAlign: "left",
-    color: "inherit",
-    cursor: "pointer",
-    backdropFilter: "blur(10px)",
-    transition: "transform 0.15s ease",
-    padding: 0,
-    display: "flex",
-    flexDirection: "column",
-  },
-  videoThumb: { width: "100%", aspectRatio: "16/9", objectFit: "cover", display: "block" },
-  videoBody: { padding: "0.85rem" },
-  videoTitle: { fontSize: "0.95rem", fontWeight: 600, lineHeight: 1.35, marginBottom: "0.35rem" },
-  videoChannel: { fontSize: "0.8rem", opacity: 0.7, margin: 0 },
-  matchBadge: {
-    display: "inline-block",
-    marginTop: "0.5rem",
-    fontSize: "0.72rem",
-    padding: "0.2rem 0.55rem",
-    borderRadius: 999,
-    background: "rgba(79,140,255,0.2)",
-  },
-  empty: { textAlign: "center", padding: "3rem", opacity: 0.7 },
-
-  blogList: { display: "flex", flexDirection: "column", gap: "1rem" },
-  blogExcerptCard: {
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    borderRadius: 14,
-    padding: "1.25rem",
-    textAlign: "left",
-    color: "inherit",
-    cursor: "pointer",
-    backdropFilter: "blur(10px)",
-  },
-  blogTitle: { fontSize: "1.05rem", fontWeight: 600, marginBottom: "0.4rem" },
-  blogExcerpt: { fontSize: "0.9rem", opacity: 0.8, lineHeight: 1.5, marginBottom: "0.6rem" },
-  blogMeta: { fontSize: "0.78rem", opacity: 0.6 },
-
-  backBtn: {
-    background: "transparent",
-    border: "1px solid rgba(255,255,255,0.25)",
-    color: "inherit",
-    padding: "0.5rem 1rem",
-    borderRadius: 999,
-    cursor: "pointer",
-    alignSelf: "flex-start",
-    fontSize: "0.85rem",
-  },
-  blogArticle: { maxWidth: 760, margin: "0 auto" },
-  blogArticleTitle: { fontSize: "1.6rem", fontWeight: 700, lineHeight: 1.3, marginBottom: "0.5rem" },
-  markdownBody: {
-    lineHeight: 1.75,
-    fontSize: "1rem",
-  },
-  blogFootnote: { fontSize: "0.8rem", opacity: 0.6, fontStyle: "italic", marginTop: "2rem" },
-
   modalBackdrop: {
     position: "fixed",
     inset: 0,
