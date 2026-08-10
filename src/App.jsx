@@ -75,12 +75,19 @@ export default function App() {
             <DietGuidePage />
           </TabPage>
         );
-      case 'learn':
+      case 'learn': {
+        let dietProfile = {};
+        try {
+          const saved = localStorage.getItem('nutriscope_profile');
+          if (saved) dietProfile = JSON.parse(saved);
+        } catch (e) {}
+        
         return (
           <TabPage key="learn">
-            <LearnHub />
+            <LearnHub userProfile={dietProfile} />
           </TabPage>
         );
+      }
       default:
         return (
           <TabPage key="home">
